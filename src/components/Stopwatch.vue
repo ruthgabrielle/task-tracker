@@ -1,7 +1,7 @@
 
 <template>
-    <section>
-        <strong>{{ elapsedTime }}</strong>
+    <section >
+        <strong class="display">{{ elapsedTime }}</strong>
     </section>
 </template>
 
@@ -25,3 +25,9 @@ export default defineComponent({
 })
 
 </script>
+
+<style>
+.display{
+    color: var(--primary-text)
+}
+</style>
