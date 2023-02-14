@@ -19,6 +19,7 @@ import Timer from './Timer.vue'
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Form',
+    emits: ['onSaveTask'],
     components: {
         Timer
     },
@@ -29,10 +30,10 @@ export default defineComponent({
     },
     methods: {
         endTask(elapsedTime: number): void {
-
-            this.description = ""
-            console.log(this.description)
-            console.log('task time', elapsedTime)
+            this.$emit('onSaveTask', {
+                timeSeconds: elapsedTime,
+                description: this.description
+            })
         }
     }
 })
