@@ -12,10 +12,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Form from '../components/Form.vue';
-import Task from '../components/Task.vue';
-import Box from '../components/Box.vue';
-import ITask from '../interfaces/ITask'
+import Form from '@/components/Form.vue';
+import Task from '@/components/Task.vue';
+import Box from '@/components/Box.vue';
+import ITask from '@/interfaces/ITask'
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
     name: "Tasks",

@@ -18,7 +18,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Button from './Button.vue'
 import Stopwatch from './Stopwatch.vue'
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
