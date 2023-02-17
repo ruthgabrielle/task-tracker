@@ -17,7 +17,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useStore } from '@/store';
-import { ADD_PROJECT, EDIT_PROJECT } from '@/store/mutation-type';
+import { ADD_PROJECT, EDIT_PROJECT, NOTIFY } from '@/store/mutation-type';
+import { NotificationType } from '@/interfaces/INotification';
 
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
@@ -49,6 +50,11 @@ export default defineComponent({
                 this.store.commit(ADD_PROJECT, this.projectName)
             }
             this.projectName = ""
+            this.store.commit(NOTIFY, {
+                title: 'Success',
+                text: 'New project available',
+                type: NotificationType.SUCCESS
+            })
             this.$router.push('/projects')
         },
     },
