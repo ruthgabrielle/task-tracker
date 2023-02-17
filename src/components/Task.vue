@@ -1,12 +1,17 @@
 <template>
     <Box>
         <div class="columns">
-            <div class="column is-7"> {{ task?.description || 'No description'}} </div>
+            <div class="column is-4">
+                {{ task?.description || 'No description' }}
+            </div>
+            <div class="column is-3">
+                {{ task?.project?.name || 'N/D' }}
+            </div>
             <div class="column">
                 <Stopwatch :time-seconds="task?.timeSeconds" />
             </div>
         </div>
-    </Box>
+</Box>
 </template>
 
 <script lang="ts">
