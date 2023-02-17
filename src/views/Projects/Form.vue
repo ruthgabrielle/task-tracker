@@ -17,7 +17,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useStore } from '@/store';
-import { ADD_PROJECT, EDIT_PROJECT, NOTIFY } from '@/store/mutation-type';
+import { ADD_PROJECT, EDIT_PROJECT } from '@/store/mutation-type';
+import useNotificador from '@/hooks/notificador'
+
 import { NotificationType } from '@/interfaces/INotification';
 
 export default defineComponent({
@@ -50,19 +52,18 @@ export default defineComponent({
                 this.store.commit(ADD_PROJECT, this.projectName)
             }
             this.projectName = ""
-            this.store.commit(NOTIFY, {
-                title: 'Success',
-                text: 'New project available',
-                type: NotificationType.SUCCESS
-            })
+            this.notify(NotificationType.SUCCESS, 'Success', 'The project was saved successfully')
             this.$router.push('/projects')
         },
     },
     setup() {
         const store = useStore()
+        const { notify } = useNotificador()
         return {
             store,
+            notify
         }
+
     }
 })
 </script>
