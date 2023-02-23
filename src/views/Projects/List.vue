@@ -32,13 +32,15 @@
                 </tr>
             </tbody>
         </table>
-</section>
+    </section>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { useStore } from '@/store';
-import { DELETE_PROJECT } from '@/store/mutation-type';
+import { GET_PROJECTS, REMOVE_PROJECT } from '@/store/action-type';
+import useNotificador from '@/hooks/notificador'
+import { NotificationType } from '@/interfaces/INotification';
 
 export default defineComponent({
 
@@ -46,14 +48,19 @@ export default defineComponent({
     name: 'List',
     methods: {
         remove(id: string) {
-            this.store.commit(DELETE_PROJECT, id)
+            this.store.dispatch(REMOVE_PROJECT, id).then(() => this.notify(NotificationType.SUCCESS, 'Success', 'The project was successfully deleted')
+            )
         }
     },
     setup() {
         const store = useStore()
+        const { notify } = useNotificador()
+        store.dispatch(GET_PROJECTS)
+
         return {
             projects: computed(() => store.state.projects),
-            store
+            store,
+            notify
         }
     }
 })

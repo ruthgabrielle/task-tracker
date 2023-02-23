@@ -11,16 +11,16 @@
             </div>
         </form>
 
-</section>
+    </section>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useStore } from '@/store';
-import { ADD_PROJECT, EDIT_PROJECT } from '@/store/mutation-type';
 import useNotificador from '@/hooks/notificador'
 
 import { NotificationType } from '@/interfaces/INotification';
+import { CHANGE_PROJ, NEW_PROJECT } from '@/store/action-type';
 
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
@@ -44,17 +44,33 @@ export default defineComponent({
     methods: {
         save() {
             if (this.id) {
-                this.store.commit(EDIT_PROJECT, {
+                this.store.dispatch(CHANGE_PROJ, {
                     id: this.id,
                     name: this.projectName
                 })
+                    .then(() => this.success())
+                    .catch((error) => {
+                        this.error(error)
+                    })
             } else {
-                this.store.commit(ADD_PROJECT, this.projectName)
+                this.store.dispatch(NEW_PROJECT, this.projectName)
+                    .then(() => {
+                        this.success()
+                    }).catch((error) => {
+                        this.error(error)
+                    })
             }
+
+        },
+        success() {
             this.projectName = ""
             this.notify(NotificationType.SUCCESS, 'Success', 'The project was saved successfully')
             this.$router.push('/projects')
         },
+        error(err: any) {
+            this.projectName = ""
+            this.notify(NotificationType.FAIL, 'Erro', err)
+        }
     },
     setup() {
         const store = useStore()
