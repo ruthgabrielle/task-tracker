@@ -1,6 +1,6 @@
 <template>
     <Box>
-        <div class="columns">
+        <div class="columns clicable" @click="taskClicked">
             <div class="column is-4">
                 {{ task?.description || 'No description' }}
             </div>
@@ -11,7 +11,7 @@
                 <Stopwatch :time-seconds="task?.timeSeconds" />
             </div>
         </div>
-</Box>
+    </Box>
 </template>
 
 <script lang="ts">
@@ -22,6 +22,7 @@ import Box from './Box.vue';
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Task',
+    emits: ['onClickTask'],
     components: {
         Stopwatch,
         Box
@@ -30,7 +31,17 @@ export default defineComponent({
         task: {
             type: Object as PropType<ITask>
         }
+    },
+    methods: {
+        taskClicked(): void {
+            this.$emit('onClickTask', this.task)
+        }
     }
 }) 
 </script>
 
+<style>
+.clicable {
+    cursor: pointer
+}
+</style>
