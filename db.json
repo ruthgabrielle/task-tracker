@@ -4,5 +4,30 @@
       "id": 1,
       "name": "task-tracker"
     }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "timeSeconds": 120,
+      "description": "Set up enviroment",
+      "project": {
+        "id": 1,
+        "name": "task-tracker"
+      }
+    },
+    {
+      "timeSeconds": 1,
+      "description": "asasasa",
+      "id": 2
+    },
+    {
+      "timeSeconds": 0,
+      "description": "sasa",
+      "project": {
+        "id": 1,
+        "name": "task-tracker"
+      },
+      "id": 3
+    }
   ]
 }

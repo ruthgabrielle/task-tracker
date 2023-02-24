@@ -4,7 +4,9 @@ import { createStore, Store, useStore as vuexUseStore } from 'vuex'
 import { InjectionKey } from 'vue'
 import {
   ADD_PROJECT,
+  ADD_TASK,
   DEFINE_PROJECTS,
+  DEFINE_TASKS,
   DELETE_PROJECT,
   EDIT_PROJECT,
   NOTIFY,
@@ -12,13 +14,17 @@ import {
 import {
   CHANGE_PROJ,
   GET_PROJECTS,
+  GET_TASKS,
   NEW_PROJECT,
+  NEW_TASK,
   REMOVE_PROJECT,
 } from './action-type'
 import http from '@/http'
+import ITask from '@/interfaces/ITask'
 interface State {
   projects: IProject[]
   notifications: INotification[]
+  tasks: ITask[]
 }
 
 export const key: InjectionKey<Store<State>> = Symbol()
@@ -27,6 +33,7 @@ export const store = createStore<State>({
   state: {
     projects: [],
     notifications: [],
+    tasks: [],
   },
   mutations: {
     [ADD_PROJECT](state, projectName: string) {
@@ -55,6 +62,12 @@ export const store = createStore<State>({
         )
       }, 3000)
     },
+    [DEFINE_TASKS](state, tasks: ITask[]) {
+      state.tasks = tasks
+    },
+    [ADD_TASK](state, task: ITask) {
+      state.tasks.push(task)
+    },
   },
   actions: {
     [GET_PROJECTS]({ commit }) {
@@ -74,6 +87,14 @@ export const store = createStore<State>({
       return http
         .delete(`/projects/${id}`)
         .then(() => commit(DELETE_PROJECT, id))
+    },
+    [GET_TASKS]({ commit }) {
+      http.get('/tasks').then((response) => commit(DEFINE_TASKS, response.data))
+    },
+    [NEW_TASK]({ commit }, task: ITask) {
+      return http
+        .post('/tasks', task)
+        .then((response) => commit(ADD_TASK, response.data))
     },
   },
 })
