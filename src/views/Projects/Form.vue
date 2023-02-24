@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { useStore } from '@/store';
 import useNotificador from '@/hooks/notificador'
 
@@ -30,17 +30,7 @@ export default defineComponent({
             type: String
         }
     },
-    mounted() {
-        if (this.id) {
-            const project = this.store.state.project.projects.find(proj => proj.id == this.id)
-            this.projectName = project?.name || ''
-        }
-    },
-    data() {
-        return {
-            projectName: "",
-        };
-    },
+  
     methods: {
         save() {
             if (this.id) {
@@ -67,17 +57,25 @@ export default defineComponent({
             this.notify(NotificationType.SUCCESS, 'Success', 'The project was saved successfully')
             this.$router.push('/projects')
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         error(err: any) {
             this.projectName = ""
             this.notify(NotificationType.FAIL, 'Erro', err)
         }
     },
-    setup() {
+    setup(props) {
         const store = useStore()
         const { notify } = useNotificador()
+        const projectName = ref("")
+        if (props.id) {
+            const project = store.state.project.projects.find(proj => proj.id == props.id)
+            projectName.value = project?.name || ''
+        }
+
         return {
             store,
-            notify
+            notify,
+            projectName
         }
 
     }
