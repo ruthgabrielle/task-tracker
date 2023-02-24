@@ -5,46 +5,54 @@
             <Box v-if="emptyList">
                 No new tasks
             </Box>
-            <Task v-for="(task, index) in tasks" :key="index" :task="task" @onClickTask="selectTask" />
-            <div id="modal" class="modal" :class="{ 'is-active': taskSelected }" v-if="taskSelected">
-                <div class="modal-background"></div>
-                <div class="modal-card">
-                    <header class="modal-card-head">
-                        <p class="modal-card-title">Edit task</p>
-                        <button class="delete" aria-label="close" @click="closeModal"></button>
-                    </header>
-                    <section class="modal-card-body">
-                        <div class="field">
-                            <label for="taskDescription" class="label">
-                                Description
-                            </label>
-                            <input type="text" class="input" id="taskDescription" v-model="taskSelected.description" />
-                        </div>
-                    </section>
-                    <footer class="modal-card-foot">
-                        <button class="button is-success" @click="alterTask">Save</button>
-                        <button class="button" @click="closeModal">Cancel</button>
-                    </footer>
-                </div>
+            <div class="field">
+                <p class="control has-icons-left">
+                    <input class="input" type="text" placeholder="Type for filter" v-model="filter" />
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </p>
             </div>
+            <Modal :show-modal="taskSelected != null" v-if="taskSelected != null">
+                <template v-slot:header>
+                    <p class="modal-card-title">Edit Task</p>
+                    <button @click="closeModal" class="delete" aria-label="close"></button>
+                </template>
+                <template v-slot:body>
+                    <div class="field">
+                        <label for="taskDescription" class="label">
+                            Description
+                        </label>
+                        <input type="text" class="input" id="taskDescription" v-model="taskSelected.description" />
+                    </div>
+                </template>
+                <template v-slot:footer>
+                    <button class="button is-success" @click="alterTask">Save</button>
+                    <button class="button" @click="closeModal">Cancel</button>
+                </template>
+            </Modal>
+            <Task v-for="(task, index) in tasks" :key="index" :task="task" @onClickTask="selectTask" />
+
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, ref, watchEffect } from 'vue';
 import Form from '@/components/Form.vue';
 import Task from '@/components/Task.vue';
 import Box from '@/components/Box.vue';
-import ITask from '@/interfaces/ITask'
+import ITask from '@/interfaces/ITask';
+import Modal from '@/components/Modal.vue';
 import useNotificador from '@/hooks/notificador'
 import { useStore } from '@/store';
 import { CHANGE_TASK, GET_PROJECTS, GET_TASKS, NEW_TASK } from '@/store/action-type';
 import { NotificationType } from '@/interfaces/INotification';
+import { task } from '@/store/modules/task';
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
     name: "Tasks",
-    components: { Form, Task, Box },
+    components: { Form, Task, Box, Modal },
     data() {
         return {
             taskSelected: null as ITask | null
@@ -76,10 +84,18 @@ export default defineComponent({
         const { notify } = useNotificador()
         store.dispatch(GET_TASKS)
         store.dispatch(GET_PROJECTS)
+
+        const filter = ref("")
+
+        watchEffect(() => {
+            store.dispatch(GET_TASKS, filter.value)
+        })
+
         return {
             tasks: computed(() => store.state.task.tasks),
             store,
-            notify
+            notify,
+            filter
 
         }
     }

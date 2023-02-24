@@ -10,7 +10,6 @@
                 <button class="button" type="submit">Save</button>
             </div>
         </form>
-
     </section>
 </template>
 
@@ -21,6 +20,7 @@ import useNotificador from '@/hooks/notificador'
 
 import { NotificationType } from '@/interfaces/INotification';
 import { CHANGE_PROJ, NEW_PROJECT } from '@/store/action-type';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
@@ -30,41 +30,10 @@ export default defineComponent({
             type: String
         }
     },
-  
-    methods: {
-        save() {
-            if (this.id) {
-                this.store.dispatch(CHANGE_PROJ, {
-                    id: this.id,
-                    name: this.projectName
-                })
-                    .then(() => this.success())
-                    .catch((error) => {
-                        this.error(error)
-                    })
-            } else {
-                this.store.dispatch(NEW_PROJECT, this.projectName)
-                    .then(() => {
-                        this.success()
-                    }).catch((error) => {
-                        this.error(error)
-                    })
-            }
 
-        },
-        success() {
-            this.projectName = ""
-            this.notify(NotificationType.SUCCESS, 'Success', 'The project was saved successfully')
-            this.$router.push('/projects')
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        error(err: any) {
-            this.projectName = ""
-            this.notify(NotificationType.FAIL, 'Erro', err)
-        }
-    },
     setup(props) {
         const store = useStore()
+        const router = useRouter()
         const { notify } = useNotificador()
         const projectName = ref("")
         if (props.id) {
@@ -72,10 +41,39 @@ export default defineComponent({
             projectName.value = project?.name || ''
         }
 
+        const success = () => {
+            projectName.value = ""
+            notify(NotificationType.SUCCESS, 'Success', 'The project was saved successfully')
+            router.push('/projects')
+        }
+        const errorNotifcation = (err: any) => {
+            projectName.value = ""
+            notify(NotificationType.FAIL, 'Erro', err)
+        }
+
+        const save = () => {
+            if (props.id) {
+                store.dispatch(CHANGE_PROJ, {
+                    id: props.id,
+                    name: projectName.value
+                })
+                    .then(() => success())
+                    .catch((error) => {
+                        errorNotifcation(error)
+                    })
+            } else {
+                store.dispatch(NEW_PROJECT, projectName.value)
+                    .then(() => {
+                        success()
+                    }).catch((error) => {
+                        errorNotifcation(error)
+                    })
+            }
+
+        }
         return {
-            store,
-            notify,
-            projectName
+            projectName,
+            save
         }
 
     }

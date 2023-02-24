@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { key } from '@/store';
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import Timer from './Timer.vue'
@@ -35,25 +35,25 @@ export default defineComponent({
     components: {
         Timer
     },
-    data() {
-        return {
-            description: '',
-            projectId: ''
-        }
-    },
-    methods: {
-        endTask(elapsedTime: number): void {
-            this.$emit('onSaveTask', {
-                timeSeconds: elapsedTime,
-                description: this.description,
-                project: this.projects.find(proj => proj.id == this.projectId)
-            })
-        }
-    },
-    setup() {
+    setup(props, {emit}) {
         const store = useStore(key)
+        const description = ref("")
+        const projectId = ref("")
+        const projects = computed(() => store.state.project.projects)
+
+        const endTask = (elapsedTime: number): void => {
+            emit('onSaveTask', {
+                timeSeconds: elapsedTime,
+                description: description.value,
+                project: projects.value.find(proj => proj.id == projectId.value)
+            })
+            description.value = ""
+        }
         return {
-            projects: computed(() => store.state.project.projects)
+            description,
+            projectId,
+            projects,
+            endTask
         }
     }
 })
